@@ -109,11 +109,18 @@ Skapa en zip-fil med följande innehåll:
 
 ## Kom igång
 
+Installera [Docker desktop](https://www.docker.com/products/docker-desktop/) (docker endast räcker inte då vi använder docker compose).
+
 Kör igång applikationen:
 ```bash
 ./local-start.sh
 ```
-(Se till att ha Docker installerat)
+
+Om du har Windows, prova Command-scriptet (inte PowerShell):
+```
+local-start.bat
+```
+
 
 ---
 
