@@ -42,7 +42,44 @@ def test_add_visit_with_fixed_time(mock_datetime,mock_db):
     assert_that(result["user_agent"], equal_to("test_test"))
     assert_that(result["id"], equal_to(1))
     assert_that(result["timestamp"], datetime)
-    assert_that(result["timestamp"], equal_to(fiexd_dt))
+    assert_that(result["timestamp"], equal_to(now))
+
+
+def test_get_all_visits(mock_db):
+    mock_cur = mock_db["mock_cur"]
+    mock_cur.fetchall.return_value = [
+        (1,"2025-01-01T00:00:00Z", "0.0.0.0", "test_test"),
+        (2,"2025-01-02T00:00:00Z", "1.1.1.1", "testtest")
+    ]
+
+    result = get_all_visits()
+
+    assert_that(result[0]["timestamp"],equal_to("2025-01-01T00:00:00Z"))
+    assert_that(result[0]["ip"], equal_to("0.0.0.0"))
+    assert_that(result[0]["user_agent"], equal_to("test_test"))
+    assert_that(result[1]["ip"],equal_to("1.1.1.1"))
+    assert_that(len(result), equal_to(2))
+
+def test_get_visit_by_id(mock_db):
+    mock_cur = mock_db["mock_cur"]
+    mock_cur.fetchone.return_value = (1,"2025-01-01T00:00:00Z", "0.0.0.0", "test_test")
+
+    visit_id = 1
+
+    result = get_visit_by_id(visit_id)
+    #mock_cur.execute.assert_called()
+
+
+    assert_that(result["id"], equal_to(1))
+    assert_that(result["ip"], equal_to("0.0.0.0"))
+    assert_that(result["user_agent"], equal_to("test_test"))
+    assert_that(result["timestamp"], equal_to("2025-01-01T00:00:00Z"))
+
+
+
+    
+
+
 
 
 
