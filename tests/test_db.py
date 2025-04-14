@@ -35,9 +35,11 @@ def test_add_visit_with_fixed_time(mock_datetime,mock_db):
     id = mock_db["mock_cur"].fetchone()      #因为yeild返回的是一个字典，所以需要用字典取值的方式，而不能直接链式调用mock_db.mock_cur.fetchone() 
 
     result = add_visit(ip, user_agent)
-    mock_cur = mock_db["mock_cur"]
+    mock_cur = mock_db["mock_cur"] #声明并把fiture里的cursor封装以便反复使用
 
-    mock_cur.execute.assert_called()
+    mock_cur.execute.assert_called_with('INSERT INTO visits (timestamp, ip, user_agent) VALUES (%s, %s, %s) RETURNING id',
+        (now, ip, user_agent)) ##behavior assertion to check if funection has been called
+    
     assert_that(result["ip"], equal_to("0.0.0.0"))
     assert_that(result["user_agent"], equal_to("test_test"))
     assert_that(result["id"], equal_to(1))
@@ -60,6 +62,16 @@ def test_get_all_visits(mock_db):
     assert_that(result[1]["ip"],equal_to("1.1.1.1"))
     assert_that(len(result), equal_to(2))
 
+
+def test_get_all_visits_empty_list(mock_db):
+    mock_cur = mock_db["mock_cur"]
+    mock_cur.fetchall.return_value = []
+
+    result = get_all_visits()
+
+    assert_that(result, equal_to([])) #assert a rmpty list retured
+
+
 def test_get_visit_by_id(mock_db):
     mock_cur = mock_db["mock_cur"]
     mock_cur.fetchone.return_value = (1,"2025-01-01T00:00:00Z", "0.0.0.0", "test_test")
@@ -67,13 +79,29 @@ def test_get_visit_by_id(mock_db):
     visit_id = 1
 
     result = get_visit_by_id(visit_id)
-    #mock_cur.execute.assert_called()
 
-
+     #behavior assertion to check if funection has been called
+    mock_cur.execute.assert_called_with('SELECT id, timestamp, ip, user_agent FROM visits WHERE id = %s', (visit_id,)) #visit_id is a turple， nso need to write liske 'visit_id,'
+    
     assert_that(result["id"], equal_to(1))
     assert_that(result["ip"], equal_to("0.0.0.0"))
     assert_that(result["user_agent"], equal_to("test_test"))
     assert_that(result["timestamp"], equal_to("2025-01-01T00:00:00Z"))
+
+
+
+def test_get_visit_by_none_id(mock_db):
+    mock_cur = mock_db["mock_cur"]
+    mock_cur.fetchone.return_value = None #mock that can't find the value in db 
+
+    visit_id = 1
+
+    result = get_visit_by_id(visit_id)
+    mock_cur.execute.assert_called_with('SELECT id, timestamp, ip, user_agent FROM visits WHERE id = %s', (visit_id,))
+
+    assert_that(result, equal_to(None))
+
+
 
 
 
