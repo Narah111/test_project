@@ -1,9 +1,10 @@
 from html_utils import to_basic_html_page, get_html_start_block, get_html_end_block, to_heading_line, to_text_paragraph
-
+# alla funktioner är beroende av html_utils
 def format_welcome_message(visit):
     text = f"Welcome, you are visitor number {visit['id']}"
     return to_basic_html_page("Welcome", text)
 
+#
 def format_visit_history(history):
     output = get_html_start_block("Visits")
     output += to_heading_line("Visit history")
