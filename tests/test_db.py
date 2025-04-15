@@ -37,8 +37,7 @@ def test_add_visit_with_fixed_time(mock_datetime,mock_db):
     result = add_visit(ip, user_agent)
     mock_cur = mock_db["mock_cur"] #声明并把fiture里的cursor封装以便反复使用
 
-    mock_cur.execute.assert_called_with('INSERT INTO visits (timestamp, ip, user_agent) VALUES (%s, %s, %s) RETURNING id',
-        (now, ip, user_agent)) ##behavior assertion to check if funection has been called
+    mock_cur.execute.assert_called_with('INSERT INTO visits (timestamp, ip, user_agent) VALUES (%s, %s, %s) RETURNING id',(now, ip, user_agent)) ##behavior assertion to check if funection has been called
     
     assert_that(result["ip"], equal_to("0.0.0.0"))
     assert_that(result["user_agent"], equal_to("test_test"))
@@ -69,7 +68,7 @@ def test_get_all_visits_empty_list(mock_db):
 
     result = get_all_visits()
 
-    assert_that(result, equal_to([])) #assert a rmpty list retured
+    assert_that(result, equal_to([])) #assert a empty list retured
 
 
 def test_get_visit_by_id(mock_db):
@@ -80,7 +79,7 @@ def test_get_visit_by_id(mock_db):
 
     result = get_visit_by_id(visit_id)
 
-     #behavior assertion to check if funection has been called
+    #behavior assertion to check if funection has been called
     mock_cur.execute.assert_called_with('SELECT id, timestamp, ip, user_agent FROM visits WHERE id = %s', (visit_id,)) #visit_id is a turple， nso need to write liske 'visit_id,'
     
     assert_that(result["id"], equal_to(1))
