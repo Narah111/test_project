@@ -3,32 +3,38 @@
 import pytest
 import os
 import psycopg2
+from psycopg2 import OperationalError
 from dotenv import load_dotenv
-
 
 load_dotenv(".env.test")
 
+print("[DEBUG] Loaded DB config:", {
+    "DB_HOST": os.getenv("DB_HOST"),
+    "DB_NAME": os.getenv("DB_NAME")
+})
 
 from main import app
 
 
 def ensure_test_db_exists():
-
-    conn = psycopg2.connect(
-        dbname=os.getenv("DB_NAME"),
-        user=os.getenv("DB_USER"),
-        password=os.getenv("DB_PASSWORD"),
-        host=os.getenv("DB_HOST"),
-        port=os.getenv("DB_PORT")
-    )
-    conn.autocommit = True
-    cur = conn.cursor()
-    cur.execute("SELECT 1 FROM pg_database WHERE datname = 'test_db'")
-    if not cur.fetchone():
-        cur.execute("CREATE DATABASE test_db")
-        print("[INFO] Created test_db")
-    cur.close()
-    conn.close()
+    try:
+        conn = psycopg2.connect(
+            dbname="postgres",  # 注意：连接默认库
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD"),
+            host=os.getenv("DB_HOST"),
+            port=os.getenv("DB_PORT")
+        )
+        conn.autocommit = True
+        cur = conn.cursor()
+        cur.execute("SELECT 1 FROM pg_database WHERE datname = 'test_db'")
+        if not cur.fetchone():
+            cur.execute("CREATE DATABASE test_db")
+            print("[INFO] Created test_db")
+        cur.close()
+        conn.close()
+    except OperationalError as e:
+        raise RuntimeError(f"[ERROR] Could not connect to PostgreSQL. Check your .env.test settings.\nDetails:\n{e}")
 
 
 def init_visits_table():
@@ -84,5 +90,3 @@ def clean_visits():
 def client():
     with app.test_client() as client:
         yield client
-
-
