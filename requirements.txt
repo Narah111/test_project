@@ -6,3 +6,4 @@ pytest-cov
 pytest-randomly
 pyhamcrest
 playwright
+dotenv
