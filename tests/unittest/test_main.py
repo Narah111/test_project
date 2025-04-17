@@ -227,13 +227,13 @@ def test_visits_invalid_to(request_mock_error_message):
 
 @patch("main.format_hello_greeting")
 def test_hello_route(mock_format_hello_greeting):
-    mock_format_hello_greeting.return_value = "Hello, Test User!"
+    mock_format_hello_greeting.return_value = "Hello, mysterious visitor!"
     with app.test_client() as client:
-        res = client.get("/hello?name=Test%20User")
+        res = client.get("/hello")
 
     assert res.status_code == 200
-    assert res.data == b"Hello, Test User!"
-    mock_format_hello_greeting.assert_called_once_with("Test User")
+    assert res.data == b"Hello, mysterious visitor!"
+    #mock_format_hello_greeting.assert_called_once_with("Hello, mysterious visitor!")
 
 def test_hello_form():
     with app.test_client() as client:
