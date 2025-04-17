@@ -14,6 +14,7 @@ print("[DEBUG] Loaded DB config:", {
 })
 
 from main import app
+from db import add_visit
 
 
 def ensure_test_db_exists():
@@ -90,3 +91,13 @@ def clean_visits():
 def client():
     with app.test_client() as client:
         yield client
+
+
+@pytest.fixture
+def visits():
+    truncate_visits_table()
+    
+    add_visit("127.0.0.1","TestSuiteAgent1")
+    add_visit("127.0.0.1","TestSuiteAgent2")
+    add_visit("127.0.0.1","TestSuiteAgent3")
+    
