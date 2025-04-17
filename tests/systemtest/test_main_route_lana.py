@@ -4,13 +4,8 @@ from playwright.sync_api import sync_playwright
 BASE_URL = "http://localhost:5000"
 
 def test_root_route(page):
-    #with sync_playwright() as p:
-       # browser = p.chromium.launch(headless=False)
-        #context = browser.new_context()
-        #page = context.new_page()
-
-        page.goto(BASE_URL + "/")
-        assert "Welcome, you are visitor number " in page.content() 
+    page.goto(BASE_URL + "/")
+    assert "Welcome, you are visitor number " in page.content() 
 
 
 def test_visits_route(page):
