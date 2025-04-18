@@ -16,7 +16,6 @@ print("[DEBUG] Loaded DB config:", {
 from main import app
 from db import add_visit
 
-
 def ensure_test_db_exists():
     try:
         conn = psycopg2.connect(
@@ -97,7 +96,13 @@ def client():
 def visits():
     truncate_visits_table()
     
-    add_visit("127.0.0.1","TestSuiteAgent1")
-    add_visit("127.0.0.1","TestSuiteAgent2")
-    add_visit("127.0.0.1","TestSuiteAgent3")
+    add_visit("127.0.0.1","Mozilla/5.0")
+    add_visit("127.0.0.1","Mozilla/5.0")
+    add_visit("127.0.0.1","Mozilla/5.0")
+
+@pytest.fixture
+def singel_visit_with_id():
+    truncate_visits_table()
     
+    new_visit=add_visit("127.0.0.1","Mozilla/5.0")
+    return new_visit["id"]
