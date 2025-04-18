@@ -3,7 +3,7 @@ from hamcrest import *
 import html
 
 import pytest
-from db import get_all_visits
+from db import get_all_visits,get_visit_by_id
 
 
 
@@ -11,7 +11,7 @@ from db import get_all_visits
 
 def test_root_homepage_should_log_user_visit_and_return_welcome_message(client):
     # When: när vi besöker root-route i main.py
-    headers={"User-Agent":"TestSuiteAgent"} 
+    headers={"User-Agent":"Mozilla/5.0"} 
 
     respons_data=client.get("/",headers=headers)
 
@@ -26,17 +26,17 @@ def test_root_homepage_should_log_user_visit_and_return_welcome_message(client):
     welcome_message_to_user= f"Welcome, you are visitor number {get_visit['id']}"
 
     assert_that(respons_data.data.decode("utf-8"),contains_string(welcome_message_to_user))
-    assert_that(user_agents,has_item(contains_string("TestSuiteAgent")))
+    assert_that(user_agents,has_item(contains_string("Mozilla/5.0")))
 
 
-def test_visits_with_no_date_range(client,visits):
+def test_visits_history_with_no_date_range(client,visits):
     
     respons_data=client.get("/visits")
     assert_that(respons_data.status_code,200)
     visits=get_all_visits()
     assert_that(len(visits),greater_than(0))
 
-def test_visits_within_date_range(client,visits):
+def test_visits_history_within_date_range(client,visits):
 
     from_date ="2025-03-11"
     to_date="2025-07-11"
@@ -69,6 +69,39 @@ def test_invalid_visits_from_date_format(client):
 
     assert_that(respons_data.status_code, 400)
     assert_that(body_text,contains_string(error_message))
+
+def test_get_valid_visitor_with_id(client, singel_visit_with_id):
+    visit_id = singel_visit_with_id
+    
+   
+    response_data = client.get(f"/visit/{visit_id}")
+    
+    
+    assert_that(response_data.status_code, equal_to(200))
+
+    # gör resultatet till en sträng
+    decoded_data = response_data.data.decode("utf-8")
+    
+    
+    assert_that(decoded_data, contains_string("127.0.0.1"))  
+    assert_that(decoded_data, contains_string("Mozilla/5.0")) 
+   
+    visit = get_visit_by_id(visit_id)
+    
+   
+    assert_that(visit, is_not(None))
+    assert_that(visit["id"], equal_to(visit_id))
+    assert_that(visit["ip"], equal_to("127.0.0.1"))
+    assert_that(visit["user_agent"], contains_string("Mozilla/5.0"))
+    
+def test_invalid_visitor_returns_error_404(client):
+    invalid_id=999
+
+    respons_data=client.get(f"/visit/{invalid_id}")
+
+    assert_that(respons_data.status_code,404)
+    assert_that(respons_data.data.decode("utf-8"),contains_string("Visit not found"))
+
 
 
 
