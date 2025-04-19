@@ -19,7 +19,7 @@ from db import add_visit,get_visit_by_id
 def ensure_test_db_exists():
     try:
         conn = psycopg2.connect(
-            dbname="postgres",  # 注意：连接默认库
+            dbname="postgres",  
             user=os.getenv("DB_USER"),
             password=os.getenv("DB_PASSWORD"),
             host=os.getenv("DB_HOST"),
