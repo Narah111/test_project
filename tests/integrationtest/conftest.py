@@ -14,7 +14,7 @@ print("[DEBUG] Loaded DB config:", {
 })
 
 from main import app
-from db import add_visit
+from db import add_visit,get_visit_by_id
 
 def ensure_test_db_exists():
     try:
@@ -96,13 +96,15 @@ def client():
 def visits():
     truncate_visits_table()
     
-    add_visit("127.0.0.1","Mozilla/5.0")
-    add_visit("127.0.0.1","Mozilla/5.0")
-    add_visit("127.0.0.1","Mozilla/5.0")
+    add_visit("172.18.0.1","Mozilla/5.0")
+    add_visit("172.18.0.1","Mozilla/5.0")
+    add_visit("172.18.0.1","Mozilla/5.0")
 
 @pytest.fixture
 def singel_visit_with_id():
     truncate_visits_table()
     
-    new_visit=add_visit("127.0.0.1","Mozilla/5.0")
-    return new_visit["id"]
+    ip="172.18.0.1"
+    user_agent="Mozilla/5.0"
+    new_visit = add_visit(ip, user_agent)
+    return get_visit_by_id(new_visit["id"])   
