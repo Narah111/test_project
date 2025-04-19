@@ -71,7 +71,7 @@ def test_invalid_visits_from_date_format(client):
     assert_that(body_text,contains_string(error_message))
 
 def test_get_valid_visitor_with_id(client, singel_visit_with_id):
-    visit_id = singel_visit_with_id
+    visit_id = singel_visit_with_id["id"]
     
    
     response_data = client.get(f"/visit/{visit_id}")
@@ -83,7 +83,7 @@ def test_get_valid_visitor_with_id(client, singel_visit_with_id):
     decoded_data = response_data.data.decode("utf-8")
     
     
-    assert_that(decoded_data, contains_string("127.0.0.1"))  
+    assert_that(decoded_data, contains_string("172.18.0.1"))  
     assert_that(decoded_data, contains_string("Mozilla/5.0")) 
    
     visit = get_visit_by_id(visit_id)
@@ -91,7 +91,7 @@ def test_get_valid_visitor_with_id(client, singel_visit_with_id):
    
     assert_that(visit, is_not(None))
     assert_that(visit["id"], equal_to(visit_id))
-    assert_that(visit["ip"], equal_to("127.0.0.1"))
+    assert_that(visit["ip"], equal_to("172.18.0.1"))
     assert_that(visit["user_agent"], contains_string("Mozilla/5.0"))
     
 def test_invalid_visitor_returns_error_404(client):
