@@ -19,7 +19,7 @@ def test_root_homepage_should_log_user_visit_and_return_welcome_message(client):
     assert_that(respons_data.status_code, 200)
 
     all_db_visits=get_all_visits()
-    get_visit=all_db_visits[-1] # senaste besöket
+    get_visit=all_db_visits[-1]
 
 
     user_agents=[v["user_agent"] for v in all_db_visits]

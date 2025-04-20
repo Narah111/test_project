@@ -56,7 +56,7 @@ def test_get_users_visit_history(request_mock_start_block, request_mock_heading,
 
 
 
-    #When retreving the userid and html from function"format_visit_history"
+    #When 
     result_mock_value_user_history=format_visit_history(user_visit_id)
 
     #Then
@@ -98,7 +98,7 @@ def test_get_user_visit_details(request_mock_start_block, request_mock_heading,r
         
     
 
-    #When retreving the userid and html from function"format_visit_history"
+    #When 
     result_mock_value_user_details=format_visit_details(user_visit_id)
 
     print(result_mock_value_user_details)
