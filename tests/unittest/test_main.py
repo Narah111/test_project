@@ -123,7 +123,7 @@ def test_hello_route(mock_format_hello_greeting):
 
     assert res.status_code == 200
     assert res.data == b"Hello, mysterious visitor!"
-    #mock_format_hello_greeting.assert_called_once_with("Hello, mysterious visitor!")
+    
 
 def test_hello_form():
     with app.test_client() as client:

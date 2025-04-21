@@ -8,8 +8,8 @@ from hamcrest import *
 @pytest.fixture
 def mock_db():  # First define the mock fixture
     with patch("db.psycopg2.connect") as mock_connect:  
-        # In mock syntax, only focus on the top-level function.
-        # Everything under that is declared inside the mock body, and all sub-methods are written flatly.
+        
+
         mock_conn = MagicMock()
         mock_cur = MagicMock()
 
@@ -24,7 +24,7 @@ def mock_db():  # First define the mock fixture
         }
 
 
-@patch("db.datetime")  # Since datetime is also an external dependency, we patch it here
+@patch("db.datetime")
 def test_add_visit_with_fixed_time(mock_datetime, mock_db):
     fixed_dt = datetime(2025, 1, 1, 8, 0, tzinfo=timezone.utc)  # tzinfo is required for timezone-aware datetime
     mock_datetime.now.return_value = fixed_dt
@@ -38,7 +38,7 @@ def test_add_visit_with_fixed_time(mock_datetime, mock_db):
     result = add_visit(ip, user_agent)
     mock_cur = mock_db["mock_cur"]  # Declare and extract cursor from fixture for repeated use
 
-    # Behavior assertion to check if the function has been called with expected SQL and parameters
+    
     mock_cur.execute.assert_called_with(
         'INSERT INTO visits (timestamp, ip, user_agent) VALUES (%s, %s, %s) RETURNING id',
         (now, ip, user_agent)
@@ -84,7 +84,7 @@ def test_get_visit_by_id(mock_db):
 
     result = get_visit_by_id(visit_id)
 
-    # Behavior assertion to check if the function has been called
+    
     mock_cur.execute.assert_called_with(
         'SELECT id, timestamp, ip, user_agent FROM visits WHERE id = %s', 
         (visit_id,)  # visit_id is a tuple, so the comma is required
