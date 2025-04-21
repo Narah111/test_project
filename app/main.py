@@ -56,7 +56,7 @@ def hello_form():
         <h1>Say Hello</h1>
         <form method="GET" action="/hello">
             <label for="name">Your name:</label><br>
-            <input type="text" id="name"><br><br>
+            <input type="text" id="name" name="name"><br><br>
             <button type="submit">Say Hello</button>
         </form>
     '''
