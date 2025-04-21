@@ -104,7 +104,22 @@ def visits():
 def singel_visit_with_id():
     truncate_visits_table()
     
-    ip="172.18.0.1"
+    #ip="172.18.0.1"
+    #user_agent="Mozilla/5.0"
+    #new_visit = add_visit(ip, user_agent)
+    #return get_visit_by_id(new_visit["id"]) 
+    ip= "172.18.0.1"
     user_agent="Mozilla/5.0"
-    new_visit = add_visit(ip, user_agent)
-    return get_visit_by_id(new_visit["id"])   
+
+    user_visit_id= 1
+    user_visit=get_visit_by_id(user_visit_id)
+
+    if user_visit:
+        return user_visit
+    else:
+        new_user_visit=add_visit(ip,user_agent)
+        return new_user_visit
+
+    
+    
+    
