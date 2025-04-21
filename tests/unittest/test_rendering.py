@@ -26,7 +26,7 @@ def test_get_welcome_message_to_user(request_mock_basic_html_page):
 @patch('rendering.get_html_start_block')# först
 def test_get_users_visit_history(request_mock_start_block, request_mock_heading,request_mock_paragraph,request_mock_html_end_block):
 
-    #Given html
+    #Given mock html
 
     request_mock_start_block.return_value="<html>"
     request_mock_heading.return_value="<h1>Visit history</h1>"
@@ -60,7 +60,7 @@ def test_get_users_visit_history(request_mock_start_block, request_mock_heading,
     result_mock_value_user_history=format_visit_history(user_visit_id)
 
     #Then
-    #heading-line
+   
    
     assert_that(result_mock_value_user_history,contains_string("Visit history"))
     assert_that(result_mock_value_user_history,contains_string((f"- {user_visit_id[0]['timestamp']}: Visit #{user_visit_id[0]['id']}\n")))

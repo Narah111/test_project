@@ -7,12 +7,13 @@ APPLICATION_BASE_URL = "http://127.0.0.1:5000"
  
 def test_homepage():
      with sync_playwright() as p:
+         #Given
          browser = p.chromium.launch(headless=False)
          context = browser.new_context()
          page = context.new_page()
- 
+         #When:
          page.goto(f"{APPLICATION_BASE_URL}")
-         
+         #Then
          page_text = page.locator("p")
          expect(page_text).to_contain_text("Welcome")
  
@@ -20,13 +21,14 @@ def test_homepage():
  
 def test_visits_page():
      with sync_playwright() as p:
+         #Given
          browser = p.chromium.launch(headless=False)
          context = browser.new_context()
          page = context.new_page()
- 
+         #When:
          response = page.goto(f"{APPLICATION_BASE_URL}/visits")
          assert response.ok, f"Expected 200, got {response.status}"
-         
+         #Then:
          pre_tag = page.locator("pre")
  
          expect(pre_tag).to_be_visible()
@@ -46,15 +48,16 @@ def test_visits_page():
  
 def test_visit_with_specific_id():
      with sync_playwright() as p:
+         #Given:
          browser = p.chromium.launch(headless=False)
          context = browser.new_context()
          page = context.new_page()
- 
+         #When:
          response = page.goto(f"{APPLICATION_BASE_URL}/visit/1")
          assert response.ok, f"Expected 200, got {response.status}"
- 
+         #Then:
          visit_id = page.locator("h1")
- 
+         
          expect(visit_id).to_be_visible()
          expect(visit_id).to_contain_text("Visit #1")
  
@@ -62,13 +65,14 @@ def test_visit_with_specific_id():
  
 def test_visit_hello_page():
      with sync_playwright() as p:
+         #Given:
          browser = p.chromium.launch(headless=False)
          context = browser.new_context()
          page = context.new_page()
- 
+         #When:
          response = page.goto(f"{APPLICATION_BASE_URL}/hello")
          assert response.ok, f"Expected 200, got {response.status}"
- 
+         #Then:
          text_content = page.locator("p")
  
          expect(text_content).to_be_visible()
@@ -78,13 +82,14 @@ def test_visit_hello_page():
  
 def test_hello_form():
      with sync_playwright() as p:
+         #Given:
          browser = p.chromium.launch(headless=False)
          context = browser.new_context()
          page = context.new_page()
- 
+         #When:
          response = page.goto(f"{APPLICATION_BASE_URL}/hello-form")
          assert response.ok, f"Expected 200, got {response.status}"
- 
+         #Then:
          input = page.get_by_role("textbox")
  
          expect(input).to_be_visible()
@@ -93,13 +98,13 @@ def test_hello_form():
          input.focus()
  
          expect(input).to_be_focused()
- 
+         #When:
          input.fill("Playwright test")
  
          button = page.get_by_role("button")
          button.focus()
          button.click()
- 
+         
          expect(page).to_have_url(f"{APPLICATION_BASE_URL}/hello?name=Playwright+test")
  
          hello_text = page.locator("p")

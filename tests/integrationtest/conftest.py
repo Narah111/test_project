@@ -16,6 +16,7 @@ print("[DEBUG] Loaded DB config:", {
 from main import app
 from db import add_visit,get_visit_by_id
 
+#Given:
 def ensure_test_db_exists():
     try:
         conn = psycopg2.connect(

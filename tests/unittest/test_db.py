@@ -5,6 +5,8 @@ from unittest.mock import MagicMock, patch
 from datetime import datetime, timezone
 from hamcrest import *
 
+
+#Given:
 @pytest.fixture
 def mock_db():  # First define the mock fixture
     with patch("db.psycopg2.connect") as mock_connect:  
@@ -26,6 +28,7 @@ def mock_db():  # First define the mock fixture
 
 @patch("db.datetime")  # Since datetime is also an external dependency, we patch it here
 def test_add_visit_with_fixed_time(mock_datetime, mock_db):
+    #Given:
     fixed_dt = datetime(2025, 1, 1, 8, 0, tzinfo=timezone.utc)  # tzinfo is required for timezone-aware datetime
     mock_datetime.now.return_value = fixed_dt
     mock_datetime.timezone = timezone  # timezone also needs to be mocked
@@ -34,7 +37,7 @@ def test_add_visit_with_fixed_time(mock_datetime, mock_db):
     user_agent = "test_test"
     now = fixed_dt
     id = mock_db["mock_cur"].fetchone()  # Since yield returns a dictionary, use dict-style access rather than chaining like mock_db.mock_cur.fetchone()
-
+    #When:
     result = add_visit(ip, user_agent)
     mock_cur = mock_db["mock_cur"]  # Declare and extract cursor from fixture for repeated use
 
@@ -43,7 +46,7 @@ def test_add_visit_with_fixed_time(mock_datetime, mock_db):
         'INSERT INTO visits (timestamp, ip, user_agent) VALUES (%s, %s, %s) RETURNING id',
         (now, ip, user_agent)
     )
-
+    #Then:
     assert_that(result["ip"], equal_to("0.0.0.0"))
     assert_that(result["user_agent"], equal_to("test_test"))
     assert_that(result["id"], equal_to(1))
@@ -52,14 +55,15 @@ def test_add_visit_with_fixed_time(mock_datetime, mock_db):
 
 
 def test_get_all_visits(mock_db):
+    #Given:
     mock_cur = mock_db["mock_cur"]
     mock_cur.fetchall.return_value = [
         (1, "2025-01-01T00:00:00Z", "0.0.0.0", "test_test"),
         (2, "2025-01-02T00:00:00Z", "1.1.1.1", "testtest")
     ]
-
+    #When:
     result = get_all_visits()
-
+    #Then:
     assert_that(result[0]["timestamp"], equal_to("2025-01-01T00:00:00Z"))
     assert_that(result[0]["ip"], equal_to("0.0.0.0"))
     assert_that(result[0]["user_agent"], equal_to("test_test"))
@@ -68,20 +72,22 @@ def test_get_all_visits(mock_db):
 
 
 def test_get_all_visits_empty_list(mock_db):
+    #Given:
     mock_cur = mock_db["mock_cur"]
     mock_cur.fetchall.return_value = []
-
+    #When:
     result = get_all_visits()
-
+    #Then:
     assert_that(result, equal_to([]))  # Assert that an empty list is returned
 
 
 def test_get_visit_by_id(mock_db):
+    #Given:
     mock_cur = mock_db["mock_cur"]
     mock_cur.fetchone.return_value = (1, "2025-01-01T00:00:00Z", "0.0.0.0", "test_test")
 
     visit_id = 1
-
+    #When:
     result = get_visit_by_id(visit_id)
 
     # Behavior assertion to check if the function has been called
@@ -89,7 +95,7 @@ def test_get_visit_by_id(mock_db):
         'SELECT id, timestamp, ip, user_agent FROM visits WHERE id = %s', 
         (visit_id,)  # visit_id is a tuple, so the comma is required
     )
-
+    #Then:
     assert_that(result["id"], equal_to(1))
     assert_that(result["ip"], equal_to("0.0.0.0"))
     assert_that(result["user_agent"], equal_to("test_test"))
@@ -97,15 +103,16 @@ def test_get_visit_by_id(mock_db):
 
 
 def test_get_visit_by_none_id(mock_db):
+    #Given:
     mock_cur = mock_db["mock_cur"]
     mock_cur.fetchone.return_value = None  # Mocking the behavior of not finding the value in DB
 
     visit_id = 1
-
+    #When:
     result = get_visit_by_id(visit_id)
     mock_cur.execute.assert_called_with(
         'SELECT id, timestamp, ip, user_agent FROM visits WHERE id = %s', 
         (visit_id,)
     )
-
+    #Then:
     assert_that(result, equal_to(None))

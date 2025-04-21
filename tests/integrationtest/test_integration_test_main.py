@@ -30,18 +30,20 @@ def test_root_homepage_should_log_user_visit_and_return_welcome_message(client):
 
 
 def test_visits_history_with_no_date_range(client,visits):
-    
+    #When
     respons_data=client.get("/visits")
+    #Then:
     assert_that(respons_data.status_code,200)
     visits=get_all_visits()
     assert_that(len(visits),greater_than(0))
 
 def test_visits_history_within_date_range(client,visits):
-
+    #Given:
     from_date ="2025-03-11"
     to_date="2025-07-11"
-
+    #When:
     respons_data= client.get(f"/visits?from={from_date}&to={to_date}")
+    #Then:
     assert_that(respons_data.status_code,200)
     visits=get_all_visits()
     assert_that(len(visits),greater_than(0))
@@ -52,31 +54,36 @@ def test_visits_history_within_date_range(client,visits):
     assert_that(visit_date,less_than_or_equal_to(datetime.fromisoformat(to_date)))
 
 def test_invalid_visits_to_date_format(client):
-
+    #When:
     respons_data=client.get("/visits?from=2025-03-11&to=invalid-date")
+    #//Given
     error_message="Invalid 'to' date format"
 
     body_text=html.unescape(respons_data.data.decode("utf-8"))
-
+    #Then:
     assert_that(respons_data.status_code, 400)
     assert_that(body_text,contains_string(error_message))
 
 def test_invalid_visits_from_date_format(client):
+    #When
     respons_data=client.get("/visits?from=invalid-format&to=2025-05-11")
+    #//Given
     error_message="Invalid 'from' date format"
 
     body_text=html.unescape(respons_data.data.decode("utf-8"))
 
+    #Then:
     assert_that(respons_data.status_code, 400)
     assert_that(body_text,contains_string(error_message))
 
 def test_get_valid_visitor_with_id(client, singel_visit_with_id):
+    #Given
     visit_id = singel_visit_with_id["id"]
     
-   
+    #When:
     response_data = client.get(f"/visit/{visit_id}")
     
-    
+    #Then:
     assert_that(response_data.status_code, equal_to(200))
 
     # gör resultatet till en sträng
@@ -95,10 +102,11 @@ def test_get_valid_visitor_with_id(client, singel_visit_with_id):
     assert_that(visit["user_agent"], contains_string("Mozilla/5.0"))
     
 def test_invalid_visitor_returns_error_404(client):
+    #Given:
     invalid_id=999
-
+    #When:
     respons_data=client.get(f"/visit/{invalid_id}")
-
+    #Then:
     assert_that(respons_data.status_code,404)
     assert_that(respons_data.data.decode("utf-8"),contains_string("Visit not found"))
 
